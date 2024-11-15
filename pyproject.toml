@@ -5,7 +5,7 @@ description = "api medication management"
 requires-python = ">=3.12"
 readme = "README.md"
 dependencies = [
-    "litestar>=2.12.1",
+    "fastapi>=0.115.5",
     "pydantic>=2.9.2",
     "sqlalchemy>=2.0.36",
     "uvicorn>=0.32.0",
@@ -23,6 +23,7 @@ dev-dependencies = [
 
 [tool.uv.sources]
 src = { workspace = true }
+scripts = { workspace = true }
 
 [tool.uv.workspace]
 members = ["webserver/*"]
@@ -32,14 +33,14 @@ exclude = ["webserver/seeds"]
 
 
 [tool.ruff]
-line-length = 135
+line-length = 120
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 target-version = "py312"
 select = ["E", "W", "F", "B", "I", "Q", "COM"]
 fixable = ["I", "W", "COM", "Q"]
 flake8-quotes.inline-quotes = "double"
 flake8-quotes.docstring-quotes = "double"
-ignore = ["D100"]
+ignore = ["D100", "B904"]
 exclude = [
     "settings.py",
     "manage.py",
