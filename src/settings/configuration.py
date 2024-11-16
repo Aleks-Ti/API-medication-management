@@ -22,7 +22,7 @@ project/                  < - указывает BASE_DIR_PROJECT
 
 @dataclass
 class DBConfig:
-    name: str | None = getenv("PG_DB")
+    name: str | None = getenv("PG_DB_NAME")
     user: str | None = getenv("PG_USER")
     passwd: str | None = getenv("PG_PASSWORD", None)
     port: int = int(getenv("PG_PORT", 5432))
@@ -51,11 +51,14 @@ class DBConfig:
 
 @dataclass
 class MQEnvs:
-    bot_token: str | None = getenv("TG_BOT_TOKEN")
-    channel_id: int | None = int(getenv("TG_CHANNEL_ID"))
+    ui_port: str | None = getenv("RMQ_UI_PORT")
+    network_port: int | None = int(getenv("RMQ_NETWOTK_PORT"))
+    user: int | None = int(getenv("RMQ_USERNAME"))
+    password: int | None = int(getenv("RMQ_PASSWORD"))
+    inner_port_for_compose: int = int(getenv("RMQ_UI_INNER_PORT"))
 
     def __post_init__(self):
-        required_vars = ["bot_token", "channel_id"]
+        required_vars = ["ui_port", "network_port", "user", "password", "inner_port_for_compose"]
         for var in required_vars:
             value = getattr(self, var)
             if value is None:

@@ -23,7 +23,7 @@ migrate:
 st:
 	ruff . --fix
 
-startd:
+mqdb:
 	docker compose down && docker compose up -d
 
 redis:
