@@ -1,0 +1,63 @@
+volumes:
+  pg_data:
+
+services:
+  mq:
+    env_file:
+      - .env
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RMQ_PASSWORD}
+    image: rabbitmq:management
+    ports:
+      - "${RMQ_NETWOTK_PORT}:${RMQ_NETWOTK_PORT}"
+      - "${RMQ_UI_PORT}:${RMQ_UI_INNER_PORT}"
+    networks:
+      - backend_network
+      - shared_network
+  api:
+    build: ./backend
+    env_file:
+      - .env
+    networks:
+      - backend_network
+      - shared_network
+    depends_on:
+      - mq
+      - db
+  db:
+    image: "postgres:16"
+    restart: always
+    env_file: .env
+    environment:
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: ${PG_DB_NAME}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PORT: ${PG_INNER_PORT}
+    ports:
+      - "${PG_PORT}:${PG_INNER_PORT}"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - backend_network
+      - shared_network
+
+networks:
+  backend_network:
+    driver: bridge
+  shared_network:
+    driver: bridge
+
+# для бота
+# version: '3.8'
+# services:
+#   bot:
+#     build: ./bot
+#     networks:
+#       - bot_network
+#       - shared_network
+# networks:
+#   bot_network:
+#     driver: bridge
+#   shared_network:
+#     external: true

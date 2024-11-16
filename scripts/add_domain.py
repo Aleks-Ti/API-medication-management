@@ -41,7 +41,7 @@ def generate_routers(name: str, path: Path) -> None:
             "from typing import Annotated\n\n"
             "from fastapi import APIRouter, Depends, HTTPException\n\n"
             f"from src.{name}.dependencies import {name}_service as _{name}_service\n"
-            f"from src.{name}.schemas import Create{TitleName}Schema, Update{TitleName}Schema, Get{TitleName}Schema, {TitleName}QueryParams\n"
+            f"from src.{name}.schemas import Create{TitleName}Schema, Update{TitleName}Schema, Get{TitleName}Schema, {TitleName}QueryParams\n"  # noqa: E501
             f"from src.{name}.service import {TitleName}Service\n\n"
             f"{name}_router = APIRouter(\n"
             f'    prefix="/{name}",\n'
@@ -68,18 +68,18 @@ def generate_routers(name: str, path: Path) -> None:
             "    except Exception as err:\n"
             f'        logging.exception(f"Error create {name} - {{err}}")\n'
             f'        raise HTTPException(status_code=400, detail="Error create {name}.")\n\n\n'
-            f'@{name}_router.put("/{name}_id", response_model=Get{TitleName}Schema)\n'
+            f'@{name}_router.put("/{{{name}_id}}", response_model=Get{TitleName}Schema)\n'
             f"async def update_{name}(\n"
             f"    {name}_id: int,\n"
             f"    {name}_service: Annotated[{TitleName}Service, Depends(_{name}_service)],\n"
             f"    {name}_data: Update{TitleName}Schema,\n"
             f") -> Get{TitleName}Schema:\n"
             "    try:\n"
-            f"        return await {name}_service.{name}_repository.update_one({name}_id, {name}_data.model_dump({name}_id))\n"
+            f"        return await {name}_service.{name}_repository.update_one({name}_id, {name}_data.model_dump({name}_id))\n"  # noqa: E501
             "    except Exception as err:\n"
             f'        logging.exception(f"Error update {name} - {{err}}")\n'
             f'        raise HTTPException(status_code=400, detail="Error update {name}.")\n\n\n'
-            f'@{name}_router.get("/{name}_id", response_model=Get{TitleName}Schema)\n'
+            f'@{name}_router.get("/{{{name}_id}}", response_model=Get{TitleName}Schema)\n'
             f"async def get_{name}(\n"
             f"    {name}_id: int,\n"
             f"    {name}_service: Annotated[{TitleName}Service, Depends(_{name}_service)],\n"
@@ -89,7 +89,7 @@ def generate_routers(name: str, path: Path) -> None:
             "    except Exception as err:\n"
             f'        logging.exception(f"Error get {name} by {{{name}_id}} - {{err}}")\n'
             f'        raise HTTPException(status_code=400, detail="Error get {name} by id.")\n\n\n'
-            f'@{name}_router.delete("/{name}_id", response_model=dict)\n'
+            f'@{name}_router.delete("/{{{name}_id}}", response_model=dict)\n'
             f"async def delete_{name}(\n"
             f"    {name}_id: int,\n"
             f"    {name}_service: Annotated[{TitleName}Service, Depends(_{name}_service)],\n"

@@ -53,8 +53,8 @@ class DBConfig:
 class MQEnvs:
     ui_port: str | None = getenv("RMQ_UI_PORT")
     network_port: int | None = int(getenv("RMQ_NETWOTK_PORT"))
-    user: int | None = int(getenv("RMQ_USERNAME"))
-    password: int | None = int(getenv("RMQ_PASSWORD"))
+    user: str | None = str(getenv("RMQ_USERNAME"))
+    password: str | None = str(getenv("RMQ_PASSWORD"))
     inner_port_for_compose: int = int(getenv("RMQ_UI_INNER_PORT"))
 
     def __post_init__(self):
@@ -67,9 +67,9 @@ class MQEnvs:
 
 @dataclass
 class Configuration:
-    debug = getenv("DEBUG", False)
-    db = DBConfig()
-    token = MQEnvs()
+    debug: bool = getenv("DEBUG", False) == "yes"
+    postgres_db = DBConfig()
+    rabbit_mq = MQEnvs()
 
 
 config_project = Configuration()

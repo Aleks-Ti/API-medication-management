@@ -1,7 +1,9 @@
-from src.news.controllers import user_router
-from src.users.controllers import news_router
+from src.drug_regimen.manager_routers import manager_router
+from src.drug_regimen.regimen_routers import regimen_router
+from src.user.routers import user_router
 
 all_routers = [
     user_router,
-    news_router,
+    regimen_router,
+    manager_router,
 ]

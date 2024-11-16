@@ -10,11 +10,13 @@ from src.settings.configuration import config_project
 
 
 def create_async_engine(url: URL | str) -> AsyncEngine:
-    return _create_async_engine(url=url, echo=config_project.debug, pool_pre_ping=True)
+    return _create_async_engine(url=url, echo=False, pool_pre_ping=True)
 
 
 async_session_maker: Callable[..., AsyncSession] = sessionmaker(
-    create_async_engine(config_project.db.build_connection()), class_=AsyncSession, expire_on_commit=False
+    create_async_engine(config_project.postgres_db.build_connection()),
+    class_=AsyncSession,
+    expire_on_commit=False,
 )
 
 

@@ -15,7 +15,7 @@ logger.addHandler(handler)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    migrate()
+    await migrate()
     yield
 
 

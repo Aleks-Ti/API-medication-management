@@ -16,13 +16,20 @@ repos:
         types: [python]
         additional_dependencies: [ruff]
 
-  - repo: local
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.3
     hooks:
-
-      - id: mypy
-        name: mypy
-        entry: mypy
-        language: system
+      - id: ruff
+        name: ruff
         types: [python]
-        pass_filenames: true
-        args: ["--config-file", "mypy.ini"]
+        additional_dependencies: [ruff]
+
+  # - repo: local
+  #   hooks:
+  #     - id: mypy
+  #       name: mypy
+  #       entry: mypy
+  #       language: system
+  #       types: [python]
+  #       pass_filenames: true
+  #       args: ["--config-file", "mypy.ini"]
