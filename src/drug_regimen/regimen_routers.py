@@ -7,9 +7,9 @@ from src.drug_regimen.dependencies import regimen_service as _regimen_service
 from src.drug_regimen.schemas import (
     AddRegimenSchema,
     CreateComplexManagerSchema,
-    DrugRegimenQueryParams,
     GetDrugRegimenSchema,
-    UpdateDrugRegimenSchema,
+    ManagerQueryParams,
+    UpdateManagerSchema,
 )
 from src.drug_regimen.service import RegimenService
 
@@ -23,7 +23,7 @@ regimen_router = APIRouter(
 @regimen_router.get("", response_model=list[GetDrugRegimenSchema])
 async def get_drug_regimens(
     drug_regimen_service: Annotated[RegimenService, Depends(_regimen_service)],
-    __query_params: DrugRegimenQueryParams,
+    __query_params: ManagerQueryParams,
 ) -> list[GetDrugRegimenSchema]:
     try:
         return await drug_regimen_service.drug_regimen_repository.find_all()
@@ -48,7 +48,7 @@ async def create_drug_regimen(
 async def update_drug_regimen(
     drug_regimen_id: int,
     drug_regimen_service: Annotated[RegimenService, Depends(_regimen_service)],
-    drug_regimen_data: UpdateDrugRegimenSchema,
+    drug_regimen_data: UpdateManagerSchema,
 ) -> GetDrugRegimenSchema:
     try:
         return await drug_regimen_service.drug_regimen_repository.update_one(

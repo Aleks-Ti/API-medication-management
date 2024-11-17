@@ -15,6 +15,6 @@ class User(Base):
     tg_user_id: Mapped[int] = mapped_column(sa.BigInteger, nullable=False, unique=True)
     first_name: Mapped[str] = mapped_column(sa.String(64), nullable=True, unique=False)
     last_name: Mapped[str] = mapped_column(sa.String(64), nullable=True, unique=False)
-    registered_at: Mapped[datetime] = mapped_column(sa.DateTime, default=datetime.now)
+    registered_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=datetime.now)
 
     managers = relationship("Manager", back_populates="user", uselist=True)

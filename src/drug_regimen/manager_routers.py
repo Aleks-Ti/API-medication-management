@@ -1,15 +1,18 @@
 import logging
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from src.drug_regimen.dependencies import manager_service as _manager_service
 from src.drug_regimen.schemas import (
     CreateComplexManagerSchema,
-    DrugRegimenQueryParams,
-    GetDrugRegimenSchema,
-    GetManager,
-    UpdateDrugRegimenSchema,
+    GetManagerSchema,
+    GetOnlyManagerSchema,
+    ManagerQueryParams,
+    UpdateManagerSchema,
+)
+from src.drug_regimen.schemas import (
+    CreateManagerSchema as CreateManagerSchema,
 )
 from src.drug_regimen.service import ManagerService
 
@@ -20,66 +23,81 @@ manager_router = APIRouter(
 )
 
 
-@manager_router.get("", response_model=list[GetDrugRegimenSchema])
-async def get_drug_regimens(
+@manager_router.get("", response_model=list[GetManagerSchema])
+async def get_managers(
     manager_service: Annotated[ManagerService, Depends(_manager_service)],
-    __query_params: DrugRegimenQueryParams,
-) -> list[GetDrugRegimenSchema]:
+    query_params: Annotated[ManagerQueryParams, Query()],
+) -> list[GetManagerSchema]:
     try:
-        return await manager_service.drug_regimen_repository.find_all()
+        managers = await manager_service.manager_repository.find_all_ON_user_regimen(query_params)
+        return managers
     except Exception as err:
-        logging.exception(f"Error get a drug_regimen - {err}")
-        raise HTTPException(status_code=400, detail="Error get a drug_regimen.")
+        logging.exception(f"Error get a managers - {err}")
+        raise HTTPException(status_code=400, detail="Error get a managers.")
 
 
-@manager_router.post("/complex", response_model=GetManager)
-async def create_drug_regimen(
+@manager_router.post("", response_model=GetOnlyManagerSchema)
+async def create_manager(
+    manager_service: Annotated[ManagerService, Depends(_manager_service)],
+    manager_data: CreateManagerSchema,
+) -> GetOnlyManagerSchema:
+    try:
+        manager = await manager_service.manager_repository.add_one(manager_data.model_dump())
+        return manager
+    except Exception as err:
+        logging.exception(f"Error create complex manager - {err}")
+        raise HTTPException(status_code=400, detail="Error create complex manager.")
+
+
+@manager_router.post("/complex", response_model=GetOnlyManagerSchema)
+async def create_complex_manager(
     manager_service: Annotated[ManagerService, Depends(_manager_service)],
     manager_data: CreateComplexManagerSchema,
-) -> GetDrugRegimenSchema:
+) -> GetOnlyManagerSchema:
     try:
-        return await manager_service.manager_repository.add_complex(manager_data)
+        manager = await manager_service.manager_repository.add_complex(manager_data)
+        return manager
     except Exception as err:
-        logging.exception(f"Error create drug_regimen - {err}")
-        raise HTTPException(status_code=400, detail="Error create drug_regimen.")
+        logging.exception(f"Error create complex manager - {err}")
+        raise HTTPException(status_code=400, detail="Error create complex manager.")
 
 
-@manager_router.put("/{drug_regimen_id}", response_model=GetDrugRegimenSchema)
-async def update_drug_regimen(
-    drug_regimen_id: int,
+@manager_router.put("/{manager_id}", response_model=GetOnlyManagerSchema)
+async def update_manager(
+    manager_id: int,
     manager_service: Annotated[ManagerService, Depends(_manager_service)],
-    drug_regimen_data: UpdateDrugRegimenSchema,
-) -> GetDrugRegimenSchema:
+    drug_regimen_data: UpdateManagerSchema,
+) -> GetOnlyManagerSchema:
     try:
-        return await manager_service.drug_regimen_repository.update_one(
-            drug_regimen_id,
-            drug_regimen_data.model_dump(drug_regimen_id),
+        return await manager_service.manager_repository.update_one(
+            manager_id,
+            drug_regimen_data.model_dump(),
         )
     except Exception as err:
-        logging.exception(f"Error update drug_regimen - {err}")
+        logging.exception(f"Error update manager - {err}")
         raise HTTPException(status_code=400, detail="Error update drug_regimen.")
 
 
-@manager_router.get("/{drug_regimen_id}", response_model=GetDrugRegimenSchema)
-async def get_drug_regimen(
-    drug_regimen_id: int,
+@manager_router.get("/{manager_id}", response_model=GetOnlyManagerSchema)
+async def get_manager(
+    manager_id: int,
     manager_service: Annotated[ManagerService, Depends(_manager_service)],
-) -> GetDrugRegimenSchema:
+) -> GetOnlyManagerSchema:
     try:
-        return await manager_service.drug_regimen_repository.find_one(drug_regimen_id)
+        return await manager_service.manager_repository.find_one(manager_id)
     except Exception as err:
-        logging.exception(f"Error get drug_regimen by {drug_regimen_id} - {err}")
-        raise HTTPException(status_code=400, detail="Error get drug_regimen by id.")
+        logging.exception(f"Error get manager by {manager_id=} - {err}")
+        raise HTTPException(status_code=400, detail="Error get manager by id.")
 
 
-@manager_router.delete("/{drug_regimen_id}", response_model=dict)
-async def delete_drug_regimen(
-    drug_regimen_id: int,
+@manager_router.delete("/{manager_id}", response_model=dict)
+async def delete_manager(
+    manager_id: int,
     manager_service: Annotated[ManagerService, Depends(_manager_service)],
-) -> GetDrugRegimenSchema:
+) -> dict:
     try:
-        await manager_service.drug_regimen_repository.delete_one(drug_regimen_id)
-        return {"message": "Drug_Regimen deleted successfully"}
+        await manager_service.manager_repository.delete_one(manager_id)
+        return {"message": "manager deleted successfully"}
     except Exception as err:
-        logging.exception(f"Error deleted drug_regimen by {drug_regimen_id} - {err}")
-        raise HTTPException(status_code=400, detail="Error deleted drug_regimen by id.")
+        logging.exception(f"Error deleted manager by {manager_id=} - {err}")
+        raise HTTPException(status_code=400, detail="Error deleted manager by id.")
