@@ -1,15 +1,16 @@
 import logging
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from src.drug_regimen.dependencies import regimen_service as _regimen_service
 from src.drug_regimen.schemas import (
     AddRegimenSchema,
-    CreateComplexManagerSchema,
-    GetDrugRegimenSchema,
-    ManagerQueryParams,
-    UpdateManagerSchema,
+    CreateRegimenSchema,
+    GetOnlyRegimenSchema,
+    GetRegimenSchema,
+    RegimenQueryParams,
+    UpdateRegimenSchema,
 )
 from src.drug_regimen.service import RegimenService
 
@@ -20,79 +21,80 @@ regimen_router = APIRouter(
 )
 
 
-@regimen_router.get("", response_model=list[GetDrugRegimenSchema])
-async def get_drug_regimens(
-    drug_regimen_service: Annotated[RegimenService, Depends(_regimen_service)],
-    __query_params: ManagerQueryParams,
-) -> list[GetDrugRegimenSchema]:
+@regimen_router.get("", response_model=list[GetRegimenSchema])
+async def get_regimens(
+    regimen_service: Annotated[RegimenService, Depends(_regimen_service)],
+    query_params: Annotated[RegimenQueryParams, Query()],
+) -> list[GetRegimenSchema]:
     try:
-        return await drug_regimen_service.drug_regimen_repository.find_all()
+        regimens = await regimen_service.regimen_repository.find_all(query_params)
+        return regimens
     except Exception as err:
         logging.exception(f"Error get a drug_regimen - {err}")
         raise HTTPException(status_code=400, detail="Error get a drug_regimen.")
 
 
-@regimen_router.post("", response_model=GetDrugRegimenSchema)
-async def create_drug_regimen(
-    drug_regimen_service: Annotated[RegimenService, Depends(_regimen_service)],
-    drug_regimen_data: CreateComplexManagerSchema,
-) -> GetDrugRegimenSchema:
+@regimen_router.post("", response_model=GetOnlyRegimenSchema)
+async def create_regimen(
+    regimen_service: Annotated[RegimenService, Depends(_regimen_service)],
+    regimen_data: CreateRegimenSchema,
+) -> GetRegimenSchema:
     try:
-        return await drug_regimen_service.drug_regimen_repository.add_one(drug_regimen_data.model_dump())
+        return await regimen_service.regimen_repository.add_one(regimen_data.model_dump())
     except Exception as err:
-        logging.exception(f"Error create drug_regimen - {err}")
-        raise HTTPException(status_code=400, detail="Error create drug_regimen.")
+        logging.exception(f"Error create regimen - {err}")
+        raise HTTPException(status_code=400, detail="Error create regimen.")
 
 
-@regimen_router.put("/{drug_regimen_id}", response_model=GetDrugRegimenSchema)
-async def update_drug_regimen(
-    drug_regimen_id: int,
-    drug_regimen_service: Annotated[RegimenService, Depends(_regimen_service)],
-    drug_regimen_data: UpdateManagerSchema,
-) -> GetDrugRegimenSchema:
+@regimen_router.put("/{regimen_id}", response_model=GetOnlyRegimenSchema)
+async def update_regimen(
+    regimen_id: int,
+    regimen_service: Annotated[RegimenService, Depends(_regimen_service)],
+    regimen_data: UpdateRegimenSchema,
+) -> GetRegimenSchema:
     try:
-        return await drug_regimen_service.drug_regimen_repository.update_one(
-            drug_regimen_id,
-            drug_regimen_data.model_dump(drug_regimen_id),
+        return await regimen_service.regimen_repository.update_one(
+            regimen_id,
+            regimen_data.model_dump(),
         )
     except Exception as err:
-        logging.exception(f"Error update drug_regimen - {err}")
-        raise HTTPException(status_code=400, detail="Error update drug_regimen.")
+        logging.exception(f"Error update regimen - {err}")
+        raise HTTPException(status_code=400, detail="Error update regimen.")
 
 
-@regimen_router.get("/{drug_regimen_id}", response_model=GetDrugRegimenSchema)
-async def get_drug_regimen(
-    drug_regimen_id: int,
-    drug_regimen_service: Annotated[RegimenService, Depends(_regimen_service)],
-) -> GetDrugRegimenSchema:
+@regimen_router.get("/{regimen_id}", response_model=GetOnlyRegimenSchema)
+async def get_regimen(
+    regimen_id: int,
+    regimen_service: Annotated[RegimenService, Depends(_regimen_service)],
+) -> GetRegimenSchema:
     try:
-        return await drug_regimen_service.drug_regimen_repository.find_one(drug_regimen_id)
+        return await regimen_service.regimen_repository.find_one(regimen_id)
     except Exception as err:
-        logging.exception(f"Error get drug_regimen by {drug_regimen_id} - {err}")
-        raise HTTPException(status_code=400, detail="Error get drug_regimen by id.")
+        logging.exception(f"Error get regimen by {regimen_id} - {err}")
+        raise HTTPException(status_code=400, detail="Error get regimen by id.")
 
 
-@regimen_router.delete("/{drug_regimen_id}", response_model=dict)
-async def delete_drug_regimen(
-    drug_regimen_id: int,
-    drug_regimen_service: Annotated[RegimenService, Depends(_regimen_service)],
-) -> GetDrugRegimenSchema:
+@regimen_router.delete("/{regimen_id}", response_model=dict)
+async def delete_regimen(
+    regimen_id: int,
+    regimen_service: Annotated[RegimenService, Depends(_regimen_service)],
+) -> dict:
     try:
-        await drug_regimen_service.drug_regimen_repository.delete_one(drug_regimen_id)
-        return {"message": "Drug_Regimen deleted successfully"}
+        await regimen_service.regimen_repository.delete_one(regimen_id)
+        return {"message": "regimen deleted successfully"}
     except Exception as err:
-        logging.exception(f"Error deleted drug_regimen by {drug_regimen_id} - {err}")
-        raise HTTPException(status_code=400, detail="Error deleted drug_regimen by id.")
+        logging.exception(f"Error deleted regimen by {regimen_id} - {err}")
+        raise HTTPException(status_code=400, detail="Error deleted regimen by id.")
 
 
-@regimen_router.post("/add", response_model=dict)
+@regimen_router.post("/complex", response_model=dict)
 async def add_regimen(
     regimen_service: Annotated[RegimenService, Depends(_regimen_service)],
     regimen_data: AddRegimenSchema,
-) -> GetDrugRegimenSchema:
+) -> dict:
     try:
         await regimen_service.regimen_repository.add_one(regimen_data.model_dump())
-        return {"message": "regimen add"}
+        return {"message": "regimen add successfully"}
     except Exception as err:
         logging.exception(f"Error add regimen for manager_id{regimen_data.manager_id=} - {err}")
         raise HTTPException(status_code=400, detail="Error add regimen for manager.")

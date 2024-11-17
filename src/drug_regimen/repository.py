@@ -4,7 +4,7 @@ from sqlalchemy import and_, insert, select
 from sqlalchemy.orm import selectinload
 
 from src.drug_regimen.models import Manager, Regimen
-from src.drug_regimen.schemas import CreateComplexManagerSchema, ManagerQueryParams
+from src.drug_regimen.schemas import CreateComplexManagerSchema, ManagerQueryParams, RegimenQueryParams
 from src.settings.database import async_session_maker
 from src.settings.repository import SQLAlchemyRepository
 from src.user.models import User
@@ -55,15 +55,34 @@ class ManagerRepository(SQLAlchemyRepository):
     async def find_all_ON_user_regimen(self, query_params: ManagerQueryParams) -> Sequence[Manager]:
         async with async_session_maker() as session:
             stmt = select(self.model).options(selectinload(self.model.user), selectinload(self.model.regimens))
+
             if query_params.user_tg_id:
                 stmt = stmt.where(and_(User.tg_user_id == query_params.user_tg_id))
             if query_params.user_id:
                 stmt = stmt.where(and_(User.id == query_params.user_id))
             if query_params.is_active is not None:
                 stmt = stmt.where(and_(self.model.is_active == query_params.is_active))
+
             res = await session.execute(stmt)
             return res.scalars().all()
 
 
 class RegimenRepository(SQLAlchemyRepository):
     model: type[Regimen] = Regimen
+
+    async def find_all(self, query_params: RegimenQueryParams) -> Sequence[Regimen]:
+        async with async_session_maker() as session:
+            stmt = select(self.model).options(selectinload(self.model.manager).selectinload(Manager.user))
+
+            if query_params.manager_id:
+                stmt = stmt.where(and_(self.model.manager_id == query_params.manager_id))
+
+            res = await session.execute(stmt)
+            return res.scalars().all()
+
+    async def add_one(self, data: dict):
+        async with async_session_maker() as session:
+            stmt = insert(self.model).values(**data).returning(self.model)
+            res = await session.execute(stmt)
+            await session.commit()
+            return res.scalar_one()

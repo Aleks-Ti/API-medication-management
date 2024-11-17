@@ -1,12 +1,9 @@
 from datetime import datetime, time
+from typing import Any
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from src.settings.schemas import PreBase
-
-
-class GetDrugRegimenSchema(PreBase):
-    pass
 
 
 class GetOnlyManagerSchema(PreBase):
@@ -93,4 +90,44 @@ class GetManagerSchema(PreBase):
 class ManagerQueryParams(PreBase):
     user_tg_id: int = Field(None)
     user_id: int = Field(None)
+    is_active: bool = Field(None)
+
+
+class RegimenQueryParams(PreBase):
+    manager_id: int = Field(None)
+
+
+class GetRegimenSchema(PreBase):
+    id: int
+    drug_time: time
+    supplement: str
+    is_active: bool
+    manager: GetOnlyManagerSchema
+    user: GetUserSchema
+
+    @model_validator(mode="before")
+    @classmethod
+    def set_manager(cls, data) -> Any:
+        data.user = data.manager.user
+        return data
+
+
+class CreateRegimenSchema(PreBase):
+    manager_id: int
+    drug_time: time
+    supplement: str
+    is_active: bool
+
+
+class GetOnlyRegimenSchema(PreBase):
+    id: int
+    drug_time: time
+    supplement: str
+    is_active: bool
+    manager_id: int
+
+
+class UpdateRegimenSchema(PreBase):
+    drug_time: time = Field(None)
+    supplement: str = Field(None)
     is_active: bool = Field(None)
