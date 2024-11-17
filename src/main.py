@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 from contextlib import asynccontextmanager
@@ -5,6 +6,8 @@ from contextlib import asynccontextmanager
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.event.dependencies import event_service as _event_service
+from src.event.setup import setup_queue
 from src.routers import all_routers
 from src.settings.database import migrate
 from src.settings.logging_config import handler
@@ -12,10 +15,13 @@ from src.settings.logging_config import handler
 logger: logging.Logger = logging.getLogger("root")
 logger.addHandler(handler)
 
+event_service = _event_service()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    asyncio.create_task(event_service.scan_event())
     await migrate()
+    setup_queue()
     yield
 
 

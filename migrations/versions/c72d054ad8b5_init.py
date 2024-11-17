@@ -1,8 +1,8 @@
-"""qwer
+"""init
 
-Revision ID: 458b58035402
+Revision ID: c72d054ad8b5
 Revises:
-Create Date: 2024-11-16 05:21:21.166218
+Create Date: 2024-11-17 20:58:17.235074
 
 """
 from typing import Sequence, Union
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "458b58035402"
+revision: str = "c72d054ad8b5"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -25,7 +25,7 @@ def upgrade() -> None:
     sa.Column("tg_user_id", sa.BigInteger(), nullable=False),
     sa.Column("first_name", sa.String(length=64), nullable=True),
     sa.Column("last_name", sa.String(length=64), nullable=True),
-    sa.Column("registered_at", sa.DateTime(), nullable=False),
+    sa.Column("registered_at", sa.DateTime(timezone=True), nullable=False),
     sa.PrimaryKeyConstraint("id"),
     sa.UniqueConstraint("id"),
     sa.UniqueConstraint("tg_user_id"),
@@ -34,21 +34,21 @@ def upgrade() -> None:
     sa.Column("id", sa.BigInteger(), nullable=False),
     sa.Column("name", sa.String(length=128), nullable=False),
     sa.Column("is_active", sa.Boolean(), nullable=False),
-    sa.Column("start_date", sa.DateTime(), nullable=False),
-    sa.Column("finish_date", sa.DateTime(), nullable=False),
-    sa.Column("timezone", sa.String(length=64), nullable=False),
+    sa.Column("start_date", sa.DateTime(timezone=True), nullable=False),
+    sa.Column("finish_date", sa.DateTime(timezone=True), nullable=False),
+    sa.Column("timezone", sa.String(length=3), nullable=False),
     sa.Column("user_id", sa.BigInteger(), nullable=False),
-    sa.ForeignKeyConstraint(["user_id"], ["user.id"] ),
+    sa.ForeignKeyConstraint(["user_id"], ["user.id"], ondelete="CASCADE"),
     sa.PrimaryKeyConstraint("id"),
     sa.UniqueConstraint("id"),
     )
     op.create_table("regimen",
     sa.Column("id", sa.BigInteger(), nullable=False),
     sa.Column("is_active", sa.Boolean(), nullable=False),
-    sa.Column("drug_time", sa.TIME(), nullable=False),
+    sa.Column("reception_time", sa.TIME(), nullable=False),
     sa.Column("supplement", sa.String(length=128), nullable=False),
     sa.Column("manager_id", sa.BigInteger(), nullable=False),
-    sa.ForeignKeyConstraint(["manager_id"], ["manager.id"] ),
+    sa.ForeignKeyConstraint(["manager_id"], ["manager.id"], ondelete="CASCADE"),
     sa.PrimaryKeyConstraint("id"),
     sa.UniqueConstraint("id"),
     )

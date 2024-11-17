@@ -10,8 +10,8 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RMQ_PASSWORD}
     image: rabbitmq:management
     ports:
-      - "${RMQ_NETWOTK_PORT}:${RMQ_NETWOTK_PORT}"
-      - "${RMQ_UI_PORT}:${RMQ_UI_PORT}"
+      - "${RMQ_NETWOTK_PORT}:${RMQ_NETWOTK_INNER_PORT}"
+      - "${RMQ_UI_PORT}:${RMQ_UI_INNER_PORT}"
   db:
     image: "postgres:16"
     restart: always

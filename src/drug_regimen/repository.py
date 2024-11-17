@@ -39,7 +39,7 @@ class ManagerRepository(SQLAlchemyRepository):
                 insert(Regimen)
                 .values(
                     **{
-                        "drug_time": data.regimen.drug_time,
+                        "reception_time": data.regimen.reception_time,
                         "supplement": data.regimen.supplement,
                         "manager_id": manager_obj.id,
                         "is_active": data.regimen.is_active,
@@ -80,7 +80,7 @@ class RegimenRepository(SQLAlchemyRepository):
             res = await session.execute(stmt)
             return res.scalars().all()
 
-    async def add_one(self, data: dict):
+    async def add_one(self, data: dict) -> Regimen:
         async with async_session_maker() as session:
             stmt = insert(self.model).values(**data).returning(self.model)
             res = await session.execute(stmt)

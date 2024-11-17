@@ -23,7 +23,7 @@ regimen_router = APIRouter(
 
 @regimen_router.get("", response_model=list[GetRegimenSchema])
 async def get_regimens(
-    regimen_service: Annotated[RegimenService, Depends(_regimen_service)],
+    regimen_service: Annotated[RegimenService, Depends(lambda: _regimen_service())],
     query_params: Annotated[RegimenQueryParams, Query()],
 ) -> list[GetRegimenSchema]:
     try:
@@ -36,7 +36,7 @@ async def get_regimens(
 
 @regimen_router.post("", response_model=GetOnlyRegimenSchema)
 async def create_regimen(
-    regimen_service: Annotated[RegimenService, Depends(_regimen_service)],
+    regimen_service: Annotated[RegimenService, Depends(lambda: _regimen_service())],
     regimen_data: CreateRegimenSchema,
 ) -> GetRegimenSchema:
     try:
@@ -49,7 +49,7 @@ async def create_regimen(
 @regimen_router.put("/{regimen_id}", response_model=GetOnlyRegimenSchema)
 async def update_regimen(
     regimen_id: int,
-    regimen_service: Annotated[RegimenService, Depends(_regimen_service)],
+    regimen_service: Annotated[RegimenService, Depends(lambda: _regimen_service())],
     regimen_data: UpdateRegimenSchema,
 ) -> GetRegimenSchema:
     try:
@@ -65,7 +65,7 @@ async def update_regimen(
 @regimen_router.get("/{regimen_id}", response_model=GetOnlyRegimenSchema)
 async def get_regimen(
     regimen_id: int,
-    regimen_service: Annotated[RegimenService, Depends(_regimen_service)],
+    regimen_service: Annotated[RegimenService, Depends(lambda: _regimen_service())],
 ) -> GetRegimenSchema:
     try:
         return await regimen_service.regimen_repository.find_one(regimen_id)
@@ -77,7 +77,7 @@ async def get_regimen(
 @regimen_router.delete("/{regimen_id}", response_model=dict)
 async def delete_regimen(
     regimen_id: int,
-    regimen_service: Annotated[RegimenService, Depends(_regimen_service)],
+    regimen_service: Annotated[RegimenService, Depends(lambda: _regimen_service())],
 ) -> dict:
     try:
         await regimen_service.regimen_repository.delete_one(regimen_id)
@@ -89,11 +89,11 @@ async def delete_regimen(
 
 @regimen_router.post("/complex", response_model=dict)
 async def add_regimen(
-    regimen_service: Annotated[RegimenService, Depends(_regimen_service)],
+    regimen_service: Annotated[RegimenService, Depends(lambda: _regimen_service("manager"))],
     regimen_data: AddRegimenSchema,
 ) -> dict:
     try:
-        await regimen_service.regimen_repository.add_one(regimen_data.model_dump())
+        await regimen_service.add_one_complex(regimen_data)
         return {"message": "regimen add successfully"}
     except Exception as err:
         logging.exception(f"Error add regimen for manager_id{regimen_data.manager_id=} - {err}")

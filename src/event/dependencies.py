@@ -14,14 +14,14 @@ class EventFactory(DependsFactory):
                 if mode == "task":
                     self.authorised_mode["task"] = task_service()
 
-        contest_service = EventService(
+        event_service = EventService(
             event_repository=EventRepository(),
             task_service=self.authorised_mode["task"],
         )
 
-        return contest_service
+        return event_service
 
 
-def contest_service(*modes: str) -> EventService:
+def event_service(*modes: str) -> EventService:
     factory = EventFactory(modes)
     return factory.get_service()

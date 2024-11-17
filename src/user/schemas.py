@@ -15,8 +15,8 @@ class GetUserSchema(PreBase):
 class GetOrCreateUserSchema(PreBase):
     username: str
     tg_user_id: int
-    first_name: str
-    last_name: str
+    first_name: str | None
+    last_name: str | None
 
 
 class UpdateUserSchema(PreBase):

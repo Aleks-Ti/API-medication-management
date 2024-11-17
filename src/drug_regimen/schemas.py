@@ -1,9 +1,25 @@
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from typing import Any
 
 from pydantic import Field, model_validator
 
 from src.settings.schemas import PreBase
+
+MSK_TIME_ZONE = 3  # часовой пояс МСК от гринвича
+
+DICT_TIMEZONE = {
+    "-1": lambda x: x - 1,
+    "МСК": lambda x: x,
+    "+1": lambda x: x + 1,
+    "+2": lambda x: x + 2,
+    "+3": lambda x: x + 3,
+    "+4": lambda x: x + 4,
+    "+5": lambda x: x + 5,
+    "+6": lambda x: x + 6,
+    "+7": lambda x: x + 7,
+    "+8": lambda x: x + 8,
+    "+9": lambda x: x + 9,
+}
 
 
 class GetOnlyManagerSchema(PreBase):
@@ -16,7 +32,7 @@ class GetOnlyManagerSchema(PreBase):
 
 
 class CreateComplexRegimenSchema(PreBase):
-    drug_time: time
+    reception_time: time
     supplement: str
     is_active: bool
 
@@ -34,10 +50,20 @@ class CreateComplexManagerSchema(PreBase):
     manager: CreateComplexManagerSchema
     regimen: CreateComplexRegimenSchema
 
+    @model_validator(mode="after")
+    @classmethod
+    def set_reception_time_GMT(cls, data) -> Any:
+        msk_time_zone = MSK_TIME_ZONE
+        time_from_data = datetime.combine(datetime(2024, 1, 1), data.regimen.reception_time)
+        data.regimen.reception_time = (
+            time_from_data - timedelta(hours=DICT_TIMEZONE[data.manager.timezone](msk_time_zone))
+        ).time()
+        return data
+
 
 class AddRegimenSchema(PreBase):
     manager_id: int
-    drug_time: time
+    reception_time: time
     supplement: str
     is_active: bool
 
@@ -62,7 +88,7 @@ class UpdateManagerSchema(PreBase):
 
 class GetRegimenSchema(PreBase):
     id: int
-    drug_time: time
+    reception_time: time
     supplement: str
     is_active: bool
 
@@ -71,8 +97,8 @@ class GetUserSchema(PreBase):
     id: int
     username: str
     tg_user_id: int
-    first_name: str
-    last_name: str
+    first_name: str | None
+    last_name: str | None
     registered_at: datetime
 
 
@@ -99,7 +125,7 @@ class RegimenQueryParams(PreBase):
 
 class GetRegimenSchema(PreBase):
     id: int
-    drug_time: time
+    reception_time: time
     supplement: str
     is_active: bool
     manager: GetOnlyManagerSchema
@@ -114,20 +140,20 @@ class GetRegimenSchema(PreBase):
 
 class CreateRegimenSchema(PreBase):
     manager_id: int
-    drug_time: time
+    reception_time: time
     supplement: str
     is_active: bool
 
 
 class GetOnlyRegimenSchema(PreBase):
     id: int
-    drug_time: time
+    reception_time: time
     supplement: str
     is_active: bool
     manager_id: int
 
 
 class UpdateRegimenSchema(PreBase):
-    drug_time: time = Field(None)
+    reception_time: time = Field(None)
     supplement: str = Field(None)
     is_active: bool = Field(None)

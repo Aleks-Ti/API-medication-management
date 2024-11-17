@@ -64,6 +64,9 @@ class MQEnvs:
             if value is None:
                 raise ValueError(f"Environment variable for <{var}> is not set")
 
+    def build_connection(self):
+        return f"amqp://{self.user}:{self.password}@localhost:{self.network_port}/"
+
 
 @dataclass
 class Configuration:
