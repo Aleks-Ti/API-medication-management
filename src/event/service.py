@@ -1,6 +1,8 @@
 import asyncio
+import logging
 from typing import Sequence
 
+import aio_pika
 from aio_pika.abc import AbstractChannel, AbstractQueue, AbstractRobustConnection
 
 from src.drug_regimen.models import Manager, Regimen
@@ -16,18 +18,13 @@ class EventService:
         self.task_service: EventRepository = task_service
 
     async def _send_to_rabbitmq(self, messages: list[dict]) -> None:
-        """
-        Отправляет сообщения в RabbitMQ.
-        """
-        import aio_pika
-
         connection: AbstractRobustConnection = await aio_pika.connect_robust(
             config_project.rabbit_mq.build_connection(),
         )
         try:
             async with connection as conn:
                 channel: AbstractChannel = await conn.channel()
-                _: AbstractQueue = await channel.declare_queue("send_tg_message", durable=True)
+                _: AbstractQueue = await channel.declare_queue("dispatch_messages", durable=True)
 
                 for message in messages:
                     await channel.default_exchange.publish(
@@ -35,33 +32,47 @@ class EventService:
                             body=str(message).encode(),  # Преобразуем в строку для отправки
                             content_type="application/json",
                         ),
-                        routing_key="send_tg_message",
+                        routing_key="dispatch_messages",
                     )
         except Exception as err:
             print(err)
 
     async def scan_event(self) -> None:
-        count = 0
         while True:
-            count += 1
-            print("new circle", count)
             managers: Sequence[Manager] = await self.event_repository.scan_event()
             messages = []
             if managers:
                 for manager in managers:
                     user: User = manager.user
-                    regimen: Regimen = manager.regimens
-                    if regimen:
+                    regimens: Regimen = manager.regimens
+                    if regimens and len(regimens) == 1:
                         messages.append(
                             {
                                 "tg_user_id": user.tg_user_id,
                                 "manager_name": manager.name,
-                                "reception_time": regimen[0].reception_time,
-                                "supplement": regimen[0].supplement,
+                                "reception_time": regimens[0].reception_time.strftime("%H:%M"),
+                                "supplement": regimens[0].supplement,
                             },
                         )
+                    if regimens and len(regimens) > 1:
+                        for regimen in regimens:
+                            messages.append(
+                                {
+                                    "tg_user_id": user.tg_user_id,
+                                    "manager_name": manager.name,
+                                    "reception_time": regimen.reception_time.strftime("%H:%M"),
+                                    "supplement": regimen.supplement,
+                                },
+                            )
             if messages:
-                print("есть че")
+                logging.info(
+                    "Есть сообщения для отправки!\n"
+                    "спим 601 секунду, чтобы проскипать сообщения которые попали в диапазон 5 минут "
+                    "(крайний случай что если сообщение впереди от now(UTC) на 299 секунд или ровно 300 "
+                    "и не получиолсь так, что оно повторно попадет в очередь).",
+                )
                 await self._send_to_rabbitmq(messages)
-            print("я спать")
-            await asyncio.sleep(360.0)
+                await asyncio.sleep(601.0)
+            else:
+                logging.info("в дейсятименутном диапазоне от now(UTC), сообщений не найдено, спим 300 секунд")
+                await asyncio.sleep(300.0)
