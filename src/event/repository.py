@@ -11,12 +11,12 @@ from src.user.models import User
 class EventRepository(SQLAlchemyRepository):
     async def scan_event(self) -> list[Row]:
         now_utc = datetime.now(UTC)
-        interval = timedelta(minutes=5)
+        interval = timedelta(minutes=1)
         start_time = (now_utc - interval).time()
         end_time = (now_utc + interval).time()
         async with async_session_maker() as session:
             stmt = (
-                select(Manager.name, Regimen.reception_time, Regimen.supplement, User.tg_user_id)
+                select(Manager.name, Manager.timezone, Regimen.reception_time, Regimen.supplement, User.tg_user_id)
                 .join(Regimen, Manager.id == Regimen.manager_id, isouter=True)
                 .join(User, Manager.user_id == User.id)
                 .where(

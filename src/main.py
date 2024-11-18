@@ -17,6 +17,7 @@ logger.addHandler(handler)
 
 event_service = _event_service()
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     asyncio.create_task(event_service.scan_event())

@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from datetime import time
 
 import aio_pika
 from aio_pika.abc import AbstractChannel, AbstractQueue, AbstractRobustConnection
@@ -8,12 +9,14 @@ from sqlalchemy import Row
 from src.event.repository import EventRepository
 from src.settings.configuration import config_project
 from src.settings.repository import AbstractRepository
+from src.utils.time_conversion import conversion_GMT_reception_time_to_TZ
 
 
 class EventService:
     def __init__(self, event_repository: AbstractRepository, task_service: AbstractRepository = None) -> None:
         self.event_repository: EventRepository = event_repository
         self.task_service: EventRepository = task_service
+        self.conversion_time = conversion_GMT_reception_time_to_TZ
 
     async def _send_to_rabbitmq(self, messages: list[dict]) -> None:
         connection: AbstractRobustConnection = await aio_pika.connect_robust(
@@ -33,7 +36,8 @@ class EventService:
                         routing_key="dispatch_messages",
                     )
         except Exception as err:
-            print(err)
+            logging.error(f"Произошла ошибка при отправке сообщения в очередь: {err}")
+            raise
 
     async def scan_event(self) -> None:
         while True:
@@ -41,11 +45,12 @@ class EventService:
             messages = []
             if managers:
                 for manager in managers:
+                    reception_time: time = self.conversion_time(manager.reception_time, manager.timezone)
                     messages.append(
                         {
                             "tg_user_id": manager.tg_user_id,
                             "manager_name": manager.name,
-                            "reception_time": manager.reception_time.strftime("%H:%M"),
+                            "reception_time": reception_time.strftime("%H:%M"),
                             "supplement": manager.supplement,
                         },
                     )
@@ -53,12 +58,12 @@ class EventService:
             if messages:
                 logging.info(
                     "Есть сообщения для отправки!\n"
-                    "спим 601 секунду, чтобы проскипать сообщения которые попали в диапазон 5 минут "
+                    "спим 61 секунду, чтобы проскипать сообщения которые попали в диапазон 5 минут "
                     "(крайний случай что если сообщение впереди от now(UTC) на 299 секунд или ровно 300 "
                     "и не получиолсь так, что оно повторно попадет в очередь).",
                 )
                 await self._send_to_rabbitmq(messages)
-                await asyncio.sleep(601.0)
+                await asyncio.sleep(61.0)
             else:
-                logging.info("в дейсятименутном диапазоне от now(UTC), сообщений не найдено, спим 300 секунд")
-                await asyncio.sleep(300.0)
+                logging.info("в двух минутном диапазоне от now(UTC), сообщений не найдено, спим 30 секунд")
+                await asyncio.sleep(30.0)

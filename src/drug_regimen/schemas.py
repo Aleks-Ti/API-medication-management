@@ -1,25 +1,10 @@
-from datetime import datetime, time, timedelta
+from datetime import datetime, time
 from typing import Any
 
 from pydantic import Field, model_validator
 
 from src.settings.schemas import PreBase
-
-MSK_TIME_ZONE = 3  # часовой пояс МСК от гринвича
-
-DICT_TIMEZONE = {
-    "-1": lambda x: x - 1,
-    "МСК": lambda x: x,
-    "+1": lambda x: x + 1,
-    "+2": lambda x: x + 2,
-    "+3": lambda x: x + 3,
-    "+4": lambda x: x + 4,
-    "+5": lambda x: x + 5,
-    "+6": lambda x: x + 6,
-    "+7": lambda x: x + 7,
-    "+8": lambda x: x + 8,
-    "+9": lambda x: x + 9,
-}
+from src.utils.time_conversion import conversion_reception_time_to_GMT
 
 
 class GetOnlyManagerSchema(PreBase):
@@ -53,11 +38,10 @@ class CreateComplexManagerSchema(PreBase):
     @model_validator(mode="after")
     @classmethod
     def set_reception_time_GMT(cls, data) -> Any:
-        msk_time_zone = MSK_TIME_ZONE
-        time_from_data = datetime.combine(datetime(2024, 1, 1), data.regimen.reception_time)
-        data.regimen.reception_time = (
-            time_from_data - timedelta(hours=DICT_TIMEZONE[data.manager.timezone](msk_time_zone))
-        ).time()
+        data.regimen.reception_time = conversion_reception_time_to_GMT(
+            data.regimen.reception_time,
+            data.manager.timezone,
+        )
         return data
 
 
