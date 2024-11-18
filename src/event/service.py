@@ -1,15 +1,13 @@
 import asyncio
 import logging
-from typing import Sequence
 
 import aio_pika
 from aio_pika.abc import AbstractChannel, AbstractQueue, AbstractRobustConnection
+from sqlalchemy import Row
 
-from src.drug_regimen.models import Manager, Regimen
 from src.event.repository import EventRepository
 from src.settings.configuration import config_project
 from src.settings.repository import AbstractRepository
-from src.user.models import User
 
 
 class EventService:
@@ -39,31 +37,19 @@ class EventService:
 
     async def scan_event(self) -> None:
         while True:
-            managers: Sequence[Manager] = await self.event_repository.scan_event()
+            managers: list[Row] = await self.event_repository.scan_event()
             messages = []
             if managers:
                 for manager in managers:
-                    user: User = manager.user
-                    regimens: Regimen = manager.regimens
-                    if regimens and len(regimens) == 1:
-                        messages.append(
-                            {
-                                "tg_user_id": user.tg_user_id,
-                                "manager_name": manager.name,
-                                "reception_time": regimens[0].reception_time.strftime("%H:%M"),
-                                "supplement": regimens[0].supplement,
-                            },
-                        )
-                    if regimens and len(regimens) > 1:
-                        for regimen in regimens:
-                            messages.append(
-                                {
-                                    "tg_user_id": user.tg_user_id,
-                                    "manager_name": manager.name,
-                                    "reception_time": regimen.reception_time.strftime("%H:%M"),
-                                    "supplement": regimen.supplement,
-                                },
-                            )
+                    messages.append(
+                        {
+                            "tg_user_id": manager.tg_user_id,
+                            "manager_name": manager.name,
+                            "reception_time": manager.reception_time.strftime("%H:%M"),
+                            "supplement": manager.supplement,
+                        },
+                    )
+
             if messages:
                 logging.info(
                     "Есть сообщения для отправки!\n"
