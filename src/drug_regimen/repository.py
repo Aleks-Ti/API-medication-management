@@ -54,7 +54,11 @@ class ManagerRepository(SQLAlchemyRepository):
 
     async def find_all_ON_user_regimen(self, query_params: ManagerQueryParams) -> Sequence[Manager]:
         async with async_session_maker() as session:
-            stmt = select(self.model).options(selectinload(self.model.user), selectinload(self.model.regimens))
+            stmt = (
+                select(self.model)
+                .join(User, self.model.user_id == User.id)
+                .options(selectinload(self.model.user), selectinload(self.model.regimens))
+            )
 
             if query_params.user_tg_id:
                 stmt = stmt.where(and_(User.tg_user_id == query_params.user_tg_id))

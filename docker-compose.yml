@@ -25,14 +25,3 @@ services:
       - "${PG_PORT}:${PG_INNER_PORT}"
     volumes:
       - pg_data:/var/lib/postgresql/data
-  # celery:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   env_file: .env
-  #   command: celery -A src.celery_tasks.tasks worker --loglevel=info
-  #   depends_on:
-  #     - bot
-  #     - redis
-  #   networks:
-  #     - space_medication_management

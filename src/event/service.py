@@ -49,7 +49,9 @@ class EventService:
                     messages.append(
                         {
                             "tg_user_id": manager.tg_user_id,
+                            "manager_id": manager.manager_id,
                             "manager_name": manager.name,
+                            "regimen_id": manager.regimen_id,
                             "reception_time": reception_time.strftime("%H:%M"),
                             "supplement": manager.supplement,
                         },

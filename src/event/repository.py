@@ -16,7 +16,15 @@ class EventRepository(SQLAlchemyRepository):
         end_time = (now_utc + interval).time()
         async with async_session_maker() as session:
             stmt = (
-                select(Manager.name, Manager.timezone, Regimen.reception_time, Regimen.supplement, User.tg_user_id)
+                select(
+                    Manager.id.label("manager_id"),
+                    Manager.name,
+                    Manager.timezone,
+                    Regimen.id.label("regimen_id"),
+                    Regimen.reception_time,
+                    Regimen.supplement,
+                    User.tg_user_id,
+                )
                 .join(Regimen, Manager.id == Regimen.manager_id, isouter=True)
                 .join(User, Manager.user_id == User.id)
                 .where(
