@@ -14,6 +14,13 @@ start:
 		--port $$PORT \
 		"$$APP_MODULE"
 
+wstart:
+	uv run uvicorn \
+		--host $$HOST \
+		--port $$PORT \
+		"$$APP_MODULE" \
+		--workers 4
+
 dac:
 	docker compose down && docker compose up -d
 

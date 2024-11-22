@@ -1,6 +1,5 @@
 from src.drug_regimen.repository import ManagerRepository, RegimenRepository
 from src.drug_regimen.service import ManagerService, RegimenService
-from src.event.service import EventService
 from src.settings.fabric_dependency import DependsFactory
 
 
@@ -26,6 +25,6 @@ class RegimenFactory(DependsFactory):
         return contest_service
 
 
-def regimen_service(*modes: str) -> EventService:
+def regimen_service(*modes: str):
     factory = RegimenFactory(modes)
     return factory.get_service()

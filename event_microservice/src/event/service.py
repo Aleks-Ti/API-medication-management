@@ -13,9 +13,8 @@ from src.utils.time_conversion import conversion_GMT_reception_time_to_TZ
 
 
 class EventService:
-    def __init__(self, event_repository: AbstractRepository, task_service: AbstractRepository = None) -> None:
+    def __init__(self, event_repository: AbstractRepository) -> None:
         self.event_repository: EventRepository = event_repository
-        self.task_service: EventRepository = task_service
         self.conversion_time = conversion_GMT_reception_time_to_TZ
 
     async def _send_to_rabbitmq(self, messages: list[dict]) -> None:
@@ -65,7 +64,7 @@ class EventService:
                     "и не получиолсь так, что оно повторно попадет в очередь).",
                 )
                 await self._send_to_rabbitmq(messages)
-                await asyncio.sleep(61.0)
+                await asyncio.sleep(121.0)
             else:
                 logging.info("в двух минутном диапазоне от now(UTC), сообщений не найдено, спим 30 секунд")
                 await asyncio.sleep(30.0)

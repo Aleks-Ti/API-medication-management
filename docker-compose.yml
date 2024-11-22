@@ -1,6 +1,7 @@
 volumes:
   pg_data:
 
+
 services:
   mq:
     env_file:
@@ -21,7 +22,34 @@ services:
       POSTGRES_DB: ${PG_DB_NAME}
       POSTGRES_USER: ${PG_USER}
       POSTGRES_PORT: ${PG_INNER_PORT}
+      POSTGRES_POOL: 10
     ports:
       - "${PG_PORT}:${PG_INNER_PORT}"
+      - "5333:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
+  event:
+    build:
+      context: ./event_microservice
+      dockerfile: Dockerfile
+    env_file:
+      - ./event_microservice/.env
+    depends_on:
+      - mq
+      - db
+    restart: always
+    ports:
+      - "${EVENT_PORT}:${EVENT_PORT}"
+  # api:
+  #   build:
+  #     context: ./
+  #     dockerfile: Dockerfile
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - mq
+  #     - db
+  #     - event
+  #   restart: always
+  #   ports:
+  #     - "${PORT}:${PORT}"
