@@ -25,7 +25,7 @@ def conversion_reception_time_to_GMT(reception_time: time, timezone: str) -> tim
     """
     msk_time_zone = 3  # часовой пояс МСК от гринвича
     time_from_data = datetime.combine(datetime(2024, 1, 1), reception_time)
-    result = (time_from_data - timedelta(hours=DICT_TIMEZONE[timezone](msk_time_zone))).time()
+    result = (time_from_data - timedelta(hours=DICT_TIMEZONE[timezone](msk_time_zone))).time()  # type: ignore
     return result
 
 
@@ -38,5 +38,5 @@ def conversion_GMT_reception_time_to_TZ(reception_time: time, timezone: str) -> 
     """
     msk_time_zone = 3  # часовой пояс МСК от гринвича
     time_from_data = datetime.combine(datetime(2024, 1, 1), reception_time)
-    result = (time_from_data + timedelta(hours=DICT_TIMEZONE[timezone](msk_time_zone))).time()
+    result = (time_from_data + timedelta(hours=DICT_TIMEZONE[timezone](msk_time_zone))).time()  # type: ignore
     return result

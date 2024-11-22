@@ -90,3 +90,9 @@ class RegimenRepository(SQLAlchemyRepository):
             res = await session.execute(stmt)
             await session.commit()
             return res.scalar_one()
+
+    async def find_one_ON_manager(self, id: int):
+        async with async_session_maker() as session:
+            stmt = select(self.model).where(self.model.id == id).options(selectinload(self.model.manager))
+            res = await session.execute(stmt)
+            return res.scalar_one()

@@ -53,7 +53,7 @@ class DBConfig:
 class MQEnvs:
     ui_port: str | None = getenv("RMQ_UI_PORT")
     network_port: int | None = int(getenv("RMQ_NETWOTK_PORT"))
-    user: str | None = str(getenv("RMQ_USERNAME"))
+    user: str | None = str(getenv("RMQ_USER"))
     password: str | None = str(getenv("RMQ_PASSWORD"))
     inner_port_for_compose: int = int(getenv("RMQ_UI_INNER_PORT"))
 

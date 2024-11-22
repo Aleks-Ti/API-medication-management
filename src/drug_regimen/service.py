@@ -1,5 +1,5 @@
 from src.drug_regimen.repository import ManagerRepository, RegimenRepository
-from src.drug_regimen.schemas import AddRegimenSchema
+from src.drug_regimen.schemas import AddRegimenSchema, UpdateRegimenSchema
 from src.settings.repository import AbstractRepository
 from src.utils.time_conversion import conversion_reception_time_to_GMT
 
@@ -25,4 +25,17 @@ class RegimenService:
         )
 
         regimen = await self.regimen_repository.add_one(dict_regimen_data)
+        return regimen
+
+    async def update_regmen(self, regimen_data: UpdateRegimenSchema, regimen_id: int):
+        regimen_obj = await self.regimen_repository.find_one_ON_manager(regimen_id)
+
+        dict_regimen_data = regimen_data.model_dump(exclude_none=True)
+        if regimen_data.reception_time:
+            dict_regimen_data["reception_time"] = self.conversion_time(
+                regimen_data.reception_time,
+                regimen_obj.manager.timezone,
+            )
+
+        regimen = await self.regimen_repository.update_one(regimen_obj.id, dict_regimen_data)
         return regimen

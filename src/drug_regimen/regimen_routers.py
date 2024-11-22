@@ -53,10 +53,7 @@ async def update_regimen(
     regimen_data: UpdateRegimenSchema,
 ) -> GetRegimenSchema:
     try:
-        return await regimen_service.regimen_repository.update_one(
-            regimen_id,
-            regimen_data.model_dump(),
-        )
+        return await regimen_service.update_regmen(regimen_data, regimen_id)
     except Exception as err:
         logging.exception(f"Error update regimen - {err}")
         raise HTTPException(status_code=400, detail="Error update regimen.")

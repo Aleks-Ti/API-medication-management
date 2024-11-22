@@ -4,7 +4,7 @@ from typing import Any
 from pydantic import Field, model_validator
 
 from src.settings.schemas import PreBase
-from src.utils.time_conversion import conversion_reception_time_to_GMT
+from src.utils.time_conversion import conversion_GMT_reception_time_to_TZ, conversion_reception_time_to_GMT
 
 
 class GetOnlyManagerSchema(PreBase):
@@ -22,7 +22,7 @@ class CreateComplexRegimenSchema(PreBase):
     is_active: bool
 
 
-class CreateComplexManagerSchema(PreBase):
+class ComplexManagerSchema(PreBase):
     name: str
     start_date: datetime
     finish_date: datetime
@@ -32,7 +32,7 @@ class CreateComplexManagerSchema(PreBase):
 
 class CreateComplexManagerSchema(PreBase):
     user_tg_id: int
-    manager: CreateComplexManagerSchema
+    manager: ComplexManagerSchema
     regimen: CreateComplexRegimenSchema
 
     @model_validator(mode="after")
@@ -70,7 +70,7 @@ class UpdateManagerSchema(PreBase):
     is_active: bool = Field(None)
 
 
-class GetRegimenSchema(PreBase):
+class RegimenSchema(PreBase):
     id: int
     reception_time: time
     supplement: str
@@ -93,8 +93,18 @@ class GetManagerSchema(PreBase):
     finish_date: datetime
     timezone: str
     is_active: bool
-    regimens: list[GetRegimenSchema]
+    regimens: list[RegimenSchema]
     user: GetUserSchema
+
+    @model_validator(mode="before")
+    @classmethod
+    def set_reception_time_GMT(cls, data) -> Any:
+        for regimen in data.regimens:
+            regimen.reception_time = conversion_GMT_reception_time_to_TZ(
+                regimen.reception_time,
+                data.timezone,
+            )
+        return data
 
 
 class ManagerQueryParams(PreBase):
