@@ -25,7 +25,7 @@ regimen_router = APIRouter(
 async def get_regimens(
     regimen_service: Annotated[RegimenService, Depends(lambda: _regimen_service())],
     query_params: Annotated[RegimenQueryParams, Query()],
-) -> list[GetRegimenSchema]:
+):
     try:
         regimens = await regimen_service.regimen_repository.find_all(query_params)
         return regimens
@@ -38,7 +38,7 @@ async def get_regimens(
 async def create_regimen(
     regimen_service: Annotated[RegimenService, Depends(lambda: _regimen_service())],
     regimen_data: CreateRegimenSchema,
-) -> GetRegimenSchema:
+):
     try:
         return await regimen_service.regimen_repository.add_one(regimen_data.model_dump())
     except Exception as err:
@@ -51,7 +51,7 @@ async def update_regimen(
     regimen_id: int,
     regimen_service: Annotated[RegimenService, Depends(lambda: _regimen_service())],
     regimen_data: UpdateRegimenSchema,
-) -> GetRegimenSchema:
+):
     try:
         return await regimen_service.update_regmen(regimen_data, regimen_id)
     except Exception as err:
@@ -63,7 +63,7 @@ async def update_regimen(
 async def get_regimen(
     regimen_id: int,
     regimen_service: Annotated[RegimenService, Depends(lambda: _regimen_service())],
-) -> GetRegimenSchema:
+):
     try:
         return await regimen_service.regimen_repository.find_one(regimen_id)
     except Exception as err:
@@ -75,7 +75,7 @@ async def get_regimen(
 async def delete_regimen(
     regimen_id: int,
     regimen_service: Annotated[RegimenService, Depends(lambda: _regimen_service())],
-) -> dict:
+):
     try:
         await regimen_service.regimen_repository.delete_one(regimen_id)
         return {"message": "regimen deleted successfully"}
@@ -88,7 +88,7 @@ async def delete_regimen(
 async def add_regimen(
     regimen_service: Annotated[RegimenService, Depends(lambda: _regimen_service("manager"))],
     regimen_data: AddRegimenSchema,
-) -> dict:
+):
     try:
         await regimen_service.add_one_complex(regimen_data)
         return {"message": "regimen add successfully"}

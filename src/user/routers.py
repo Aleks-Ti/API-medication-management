@@ -18,7 +18,7 @@ user_router = APIRouter(
 async def get_users(
     user_service: Annotated[UserService, Depends(_user_service)],
     query_params: Annotated[UserQueryParams, Depends(UserQueryParams)],
-) -> list[GetUserSchema]:
+):
     try:
         return await user_service.user_repository.find_all()
     except Exception as err:
@@ -30,7 +30,7 @@ async def get_users(
 async def get_or_create_user(
     user_service: Annotated[UserService, Depends(_user_service)],
     user_data: GetOrCreateUserSchema,
-) -> GetUserSchema:
+):
     try:
         user = await user_service.user_repository.get_or_create_user(user_data)
         return user
@@ -44,7 +44,7 @@ async def update_user(
     user_id: int,
     user_service: Annotated[UserService, Depends(_user_service)],
     user_data: UpdateUserSchema,
-) -> GetUserSchema:
+):
     try:
         return await user_service.user_repository.update_one(user_id, user_data.model_dump(user_id))
     except Exception as err:
@@ -56,7 +56,7 @@ async def update_user(
 async def get_user(
     user_id: int,
     user_service: Annotated[UserService, Depends(_user_service)],
-) -> GetUserSchema:
+):
     try:
         return await user_service.user_repository.find_one(user_id)
     except Exception as err:
@@ -68,7 +68,7 @@ async def get_user(
 async def delete_user(
     user_id: int,
     user_service: Annotated[UserService, Depends(_user_service)],
-) -> GetUserSchema:
+):
     try:
         await user_service.user_repository.delete_one(user_id)
         return {"message": "User deleted successfully"}

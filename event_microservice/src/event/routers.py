@@ -2,8 +2,6 @@ import logging
 
 from fastapi import APIRouter, HTTPException
 
-from src.event.schemas import CheckLiveServiceSchema
-
 event_router = APIRouter(
     prefix="/event",
     tags=["event api"],
@@ -12,7 +10,7 @@ event_router = APIRouter(
 
 
 @event_router.get("", response_model=dict)
-async def alive_events() -> CheckLiveServiceSchema:
+async def alive_events():
     try:
         return {"message": "event server alive"}
     except Exception as err:

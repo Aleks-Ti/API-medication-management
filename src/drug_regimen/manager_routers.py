@@ -27,7 +27,7 @@ manager_router = APIRouter(
 async def get_managers(
     manager_service: Annotated[ManagerService, Depends(_manager_service)],
     query_params: Annotated[ManagerQueryParams, Query()],
-) -> list[GetManagerSchema]:
+):
     try:
         managers = await manager_service.manager_repository.find_all_ON_user_regimen(query_params)
         return managers
@@ -40,7 +40,7 @@ async def get_managers(
 async def create_manager(
     manager_service: Annotated[ManagerService, Depends(_manager_service)],
     manager_data: CreateManagerSchema,
-) -> GetOnlyManagerSchema:
+):
     try:
         manager = await manager_service.manager_repository.add_one(manager_data.model_dump())
         return manager
@@ -53,7 +53,7 @@ async def create_manager(
 async def create_complex_manager(
     manager_service: Annotated[ManagerService, Depends(_manager_service)],
     manager_data: CreateComplexManagerSchema,
-) -> GetOnlyManagerSchema:
+):
     try:
         manager = await manager_service.manager_repository.add_complex(manager_data)
         return manager
@@ -67,7 +67,7 @@ async def update_manager(
     manager_id: int,
     manager_service: Annotated[ManagerService, Depends(_manager_service)],
     drug_regimen_data: UpdateManagerSchema,
-) -> GetOnlyManagerSchema:
+):
     try:
         return await manager_service.manager_repository.update_one(
             manager_id,
@@ -82,7 +82,7 @@ async def update_manager(
 async def get_manager(
     manager_id: int,
     manager_service: Annotated[ManagerService, Depends(_manager_service)],
-) -> GetOnlyManagerSchema:
+):
     try:
         return await manager_service.manager_repository.find_one(manager_id)
     except Exception as err:
@@ -94,7 +94,7 @@ async def get_manager(
 async def delete_manager(
     manager_id: int,
     manager_service: Annotated[ManagerService, Depends(_manager_service)],
-) -> dict:
+):
     try:
         await manager_service.manager_repository.delete_one(manager_id)
         return {"message": "manager deleted successfully"}

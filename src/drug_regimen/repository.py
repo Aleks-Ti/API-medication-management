@@ -74,7 +74,7 @@ class ManagerRepository(SQLAlchemyRepository):
 class RegimenRepository(SQLAlchemyRepository):
     model: type[Regimen] = Regimen
 
-    async def find_all(self, query_params: RegimenQueryParams) -> Sequence[Regimen]:
+    async def find_all(self, query_params: RegimenQueryParams) -> list[Regimen]:
         async with async_session_maker() as session:
             stmt = select(self.model).options(selectinload(self.model.manager).selectinload(Manager.user))
 

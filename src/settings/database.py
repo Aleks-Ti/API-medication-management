@@ -25,5 +25,5 @@ async def get_async_session() -> AsyncGenerator:
         yield session
 
 
-async def migrate():
+async def migrate() -> None:
     subprocess.run("alembic upgrade head", shell=True, check=True)

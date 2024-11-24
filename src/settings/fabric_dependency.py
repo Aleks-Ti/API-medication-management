@@ -96,7 +96,7 @@ class DependsFactory:
             )
 
     def set_authorised_mode(self, *args: str) -> defaultdict:
-        default_dict = defaultdict(None)
+        default_dict: defaultdict = defaultdict(None)
         for flag in args:
             if not isinstance(flag, str):
                 raise ValueError(
