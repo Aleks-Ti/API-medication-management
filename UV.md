@@ -17,6 +17,8 @@
 
 ## Использование UV
 
+```uv export --no-dev --no-hashes | awk '{print $1}' FS=' ;' > requirements.txt```
+
 ### Основные команды
 
 - `uv venv`: Установить окружение
