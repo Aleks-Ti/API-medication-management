@@ -24,12 +24,12 @@ repos:
         types: [python]
         additional_dependencies: [ruff]
 
-  # - repo: local
-  #   hooks:
-  #     - id: mypy
-  #       name: mypy
-  #       entry: mypy
-  #       language: system
-  #       types: [python]
-  #       pass_filenames: true
-  #       args: ["--config-file", "mypy.ini"]
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: mypy
+        language: system
+        types: [python]
+        pass_filenames: true
+        args: ["--config-file", "mypy.ini"]
