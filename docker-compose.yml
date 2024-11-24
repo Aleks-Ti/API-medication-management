@@ -1,6 +1,11 @@
 volumes:
   pg_data:
 
+networks:
+  scheduler:
+    name: scheduler_space
+    driver: bridge
+    external: true
 
 services:
   mq:
@@ -13,6 +18,8 @@ services:
     ports:
       - "${RMQ_NETWOTK_PORT}:${RMQ_NETWOTK_INNER_PORT}"
       - "${RMQ_UI_PORT}:${RMQ_UI_INNER_PORT}"
+    networks:
+      - scheduler
   db:
     image: "postgres:16"
     restart: always
@@ -28,6 +35,8 @@ services:
       - "5333:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
+    networks:
+      - scheduler
   event:
     build:
       context: ./event_microservice
@@ -40,16 +49,20 @@ services:
     restart: always
     ports:
       - "${EVENT_PORT}:${EVENT_PORT}"
-  # api:
-  #   build:
-  #     context: ./
-  #     dockerfile: Dockerfile
-  #   env_file:
-  #     - .env
-  #   depends_on:
-  #     - mq
-  #     - db
-  #     - event
-  #   restart: always
-  #   ports:
-  #     - "${PORT}:${PORT}"
+    networks:
+      - scheduler
+  api:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    env_file:
+      - .env_container
+    depends_on:
+      - mq
+      - db
+      - event
+    restart: always
+    ports:
+      - "${PORT}:${PORT}"
+    networks:
+      - scheduler

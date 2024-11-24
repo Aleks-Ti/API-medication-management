@@ -55,17 +55,17 @@ class MQEnvs:
     network_port: int | None = int(getenv("RMQ_NETWOTK_PORT"))
     user: str | None = str(getenv("RMQ_USER"))
     password: str | None = str(getenv("RMQ_PASSWORD"))
-    inner_port_for_compose: int = int(getenv("RMQ_UI_INNER_PORT"))
+    host: int = getenv("RMQ_HOST", "localhost")
 
     def __post_init__(self):
-        required_vars = ["ui_port", "network_port", "user", "password", "inner_port_for_compose"]
+        required_vars = ["ui_port", "network_port", "user", "password", "host"]
         for var in required_vars:
             value = getattr(self, var)
             if value is None:
                 raise ValueError(f"Environment variable for <{var}> is not set")
 
     def build_connection(self):
-        return f"amqp://{self.user}:{self.password}@localhost:{self.network_port}/"
+        return f"amqp://{self.user}:{self.password}@{self.host}:{self.network_port}/"
 
 
 @dataclass

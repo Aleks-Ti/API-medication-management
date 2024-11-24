@@ -1,0 +1,9 @@
+.env
+env
+venv
+.venv
+envrc
+.envrc
+pre-commit-config.yml
+.env_container
+__pycache__
