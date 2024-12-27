@@ -2,6 +2,7 @@ import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.exc import IntegrityError
 
 from src.drug_regimen.dependencies import manager_service as _manager_service
 from src.drug_regimen.schemas import (
@@ -57,6 +58,8 @@ async def create_complex_manager(
     try:
         manager = await manager_service.manager_repository.add_complex(manager_data)
         return manager
+    except IntegrityError as err:
+        logging.error(f"Error create complex manager: IntegrityError {err}")
     except Exception as err:
         logging.exception(f"Error create complex manager - {err}")
         raise HTTPException(status_code=400, detail="Error create complex manager.")

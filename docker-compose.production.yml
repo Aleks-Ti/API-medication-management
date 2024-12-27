@@ -1,34 +1,29 @@
 volumes:
   pg_data:
+  redis_data:
+
+networks:
+  scheduler:
+    name: scheduler_space
+    driver: bridge
 
 services:
   mq:
+    image: rabbitmq:management
     env_file:
-      - .env
+      - .env_api
     environment:
       RABBITMQ_DEFAULT_USER: ${RMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RMQ_PASSWORD}
-    image: rabbitmq:management
     ports:
-      - "${RMQ_NETWOTK_PORT}:${RMQ_NETWOTK_PORT}"
+      - "${RMQ_NETWOTK_PORT}:${RMQ_NETWOTK_INNER_PORT}"
       - "${RMQ_UI_PORT}:${RMQ_UI_INNER_PORT}"
     networks:
-      - backend_network
-      - shared_network
-  api:
-    build: ./backend
-    env_file:
-      - .env
-    networks:
-      - backend_network
-      - shared_network
-    depends_on:
-      - mq
-      - db
+      - scheduler
   db:
     image: "postgres:16"
     restart: always
-    env_file: .env
+    env_file: .env_api
     environment:
       POSTGRES_PASSWORD: ${PG_PASSWORD}
       POSTGRES_DB: ${PG_DB_NAME}
@@ -37,28 +32,54 @@ services:
       POSTGRES_POOL: 10
     ports:
       - "${PG_PORT}:${PG_INNER_PORT}"
+      - "5333:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
     networks:
-      - backend_network
-      - shared_network
+      - scheduler
+  event:
+    image: aleksti/event_med:latest
+    env_file:
+      - .env_api
+    depends_on:
+      - mq
+      - db
+    restart: always
+    ports:
+      - "${EVENT_PORT}:${EVENT_PORT}"
+    networks:
+      - scheduler
+  api:
+    image: aleksti/api_med:latest
+    env_file:
+      - .env_api
+    depends_on:
+      - mq
+      - db
+      - event
+    restart: always
+    ports:
+      - "${PORT}:${PORT}"
+    networks:
+      - scheduler
 
-networks:
-  backend_network:
-    driver: bridge
-  shared_network:
-    driver: bridge
+  redis:
+    image: "redis:6.2-alpine"
+    restart: always
+    env_file: .env_api
+    volumes:
+      - redis_data:/data
+    networks:
+      - scheduler
 
-# для бота
-# version: '3.8'
-# services:
-#   bot:
-#     build: ./bot
-#     networks:
-#       - bot_network
-#       - shared_network
-# networks:
-#   bot_network:
-#     driver: bridge
-#   shared_network:
-#     external: true
+  bot:
+    image: aleksti/bot_med:latest
+    env_file: .env_api
+    networks:
+      - scheduler
+    depends_on:
+      - redis
+      - mq
+      - db
+      - event
+      - api
