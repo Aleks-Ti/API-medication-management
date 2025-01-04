@@ -1,3 +1,4 @@
+import logging
 from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import Row

@@ -55,7 +55,7 @@ class MQEnvs:
     network_port: int | None = int(getenv("RMQ_NETWOTK_PORT"))
     user: str | None = str(getenv("RMQ_USER"))
     password: str | None = str(getenv("RMQ_PASSWORD"))
-    host: str = os.getenv("RMQ_HOST") if os.getenv("DEV") == "local_container" else "host.docker.internal"
+    host: str = os.getenv("RMQ_HOST") if os.getenv("DEV") == "prod" else "host.docker.internal"
 
     def __post_init__(self):
         required_vars = ["network_port", "user", "password", "host"]
