@@ -3,9 +3,9 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from src.user.dependencies import user_service as _user_service
-from src.user.schemas import GetOrCreateUserSchema, GetUserSchema, UpdateUserSchema, UserQueryParams
-from src.user.service import UserService
+from api_backend.user.dependencies import user_service as _user_service
+from api_backend.user.schemas import GetOrCreateUserSchema, GetUserSchema, UpdateUserSchema, UserQueryParams
+from api_backend.user.service import UserService
 
 user_router = APIRouter(
     prefix="/user",

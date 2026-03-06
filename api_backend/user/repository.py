@@ -1,9 +1,9 @@
 from sqlalchemy import insert, select
 
-from src.settings.database import async_session_maker
-from src.settings.repository import SQLAlchemyRepository
-from src.user.models import User
-from src.user.schemas import GetOrCreateUserSchema
+from api_backend.settings.database import async_session_maker
+from api_backend.settings.repository import SQLAlchemyRepository
+from api_backend.user.models import User
+from api_backend.user.schemas import GetOrCreateUserSchema
 
 
 class UserRepository(SQLAlchemyRepository):

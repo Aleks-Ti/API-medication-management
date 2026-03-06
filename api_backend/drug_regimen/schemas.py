@@ -3,8 +3,8 @@ from typing import Any
 
 from pydantic import Field, model_validator
 
-from src.settings.schemas import PreBase
-from src.utils.time_conversion import conversion_GMT_reception_time_to_TZ, conversion_reception_time_to_GMT
+from api_backend.settings.schemas import PreBase
+from api_backend.utils.time_conversion import conversion_GMT_reception_time_to_TZ, conversion_reception_time_to_GMT
 
 
 class GetOnlyManagerSchema(PreBase):

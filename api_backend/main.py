@@ -5,9 +5,9 @@ from contextlib import asynccontextmanager
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.routers import all_routers
-from src.settings.database import migrate
-from src.settings.logging_config import handler
+from api_backend.routers import all_routers
+from api_backend.settings.database import migrate
+from api_backend.settings.logging_config import handler
 
 logger: logging.Logger = logging.getLogger("root")
 logger.addHandler(handler)

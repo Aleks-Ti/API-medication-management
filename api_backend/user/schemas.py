@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from src.settings.schemas import PreBase
+from api_backend.settings.schemas import PreBase
 
 
 class GetUserSchema(PreBase):

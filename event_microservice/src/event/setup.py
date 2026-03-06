@@ -1,6 +1,6 @@
 import pika
 
-from src.settings.configuration import config_project
+from api_backend.settings.configuration import config_project
 
 
 def setup_queue() -> None:

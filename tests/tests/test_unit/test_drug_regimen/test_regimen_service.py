@@ -2,10 +2,10 @@ from unittest.mock import MagicMock, Mock
 
 import pytest
 
-from src.drug_regimen.repository import ManagerRepository, RegimenRepository
-from src.drug_regimen.schemas import AddRegimenSchema, UpdateRegimenSchema
-from src.drug_regimen.service import RegimenService
-from src.utils.time_conversion import conversion_reception_time_to_GMT
+from api_backend.drug_regimen.repository import ManagerRepository, RegimenRepository
+from api_backend.drug_regimen.schemas import AddRegimenSchema, UpdateRegimenSchema
+from api_backend.drug_regimen.service import RegimenService
+from api_backend.utils.time_conversion import conversion_reception_time_to_GMT
 
 
 @pytest.fixture

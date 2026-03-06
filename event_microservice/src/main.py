@@ -8,8 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.event.dependencies import event_service as _event_service
 from src.event.setup import setup_queue
-from src.routers import all_routers
-from src.settings.logging_config import handler
+from api_backend.routers import all_routers
+from api_backend.settings.logging_config import handler
 
 logger: logging.Logger = logging.getLogger("root")
 logger.addHandler(handler)

@@ -6,10 +6,10 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from src.drug_regimen.models import Manager, Regimen
-from src.settings.base_model import metadata
-from src.settings.configuration import config_project
-from src.user.models import User
+from api_backend.drug_regimen.models import Manager, Regimen
+from api_backend.settings.base_model import metadata
+from api_backend.settings.configuration import config_project
+from api_backend.user.models import User
 
 config = context.config
 

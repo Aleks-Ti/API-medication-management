@@ -1,6 +1,6 @@
-from src.drug_regimen.repository import ManagerRepository, RegimenRepository
-from src.drug_regimen.service import ManagerService, RegimenService
-from src.settings.fabric_dependency import DependsFactory
+from api_backend.drug_regimen.repository import ManagerRepository, RegimenRepository
+from api_backend.drug_regimen.service import ManagerService, RegimenService
+from api_backend.settings.fabric_dependency import DependsFactory
 
 
 def manager_service():

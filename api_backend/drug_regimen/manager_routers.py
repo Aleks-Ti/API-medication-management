@@ -4,18 +4,18 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.exc import IntegrityError
 
-from src.drug_regimen.dependencies import manager_service as _manager_service
-from src.drug_regimen.schemas import (
+from api_backend.drug_regimen.dependencies import manager_service as _manager_service
+from api_backend.drug_regimen.schemas import (
     CreateComplexManagerSchema,
     GetManagerSchema,
     GetOnlyManagerSchema,
     ManagerQueryParams,
     UpdateManagerSchema,
 )
-from src.drug_regimen.schemas import (
+from api_backend.drug_regimen.schemas import (
     CreateManagerSchema as CreateManagerSchema,
 )
-from src.drug_regimen.service import ManagerService
+from api_backend.drug_regimen.service import ManagerService
 
 manager_router = APIRouter(
     prefix="/drug-regimen/manager",

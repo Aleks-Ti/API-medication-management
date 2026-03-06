@@ -1,7 +1,7 @@
-from src.drug_regimen.repository import ManagerRepository, RegimenRepository
-from src.drug_regimen.schemas import AddRegimenSchema, UpdateRegimenSchema
-from src.settings.repository import AbstractRepository
-from src.utils.time_conversion import conversion_reception_time_to_GMT
+from api_backend.drug_regimen.repository import ManagerRepository, RegimenRepository
+from api_backend.drug_regimen.schemas import AddRegimenSchema, UpdateRegimenSchema
+from api_backend.settings.repository import AbstractRepository
+from api_backend.utils.time_conversion import conversion_reception_time_to_GMT
 
 
 class ManagerService:

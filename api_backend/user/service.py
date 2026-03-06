@@ -1,5 +1,5 @@
-from src.settings.repository import AbstractRepository
-from src.user.repository import UserRepository
+from api_backend.settings.repository import AbstractRepository
+from api_backend.user.repository import UserRepository
 
 
 class UserService:

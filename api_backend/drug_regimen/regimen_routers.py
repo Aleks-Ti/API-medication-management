@@ -3,8 +3,8 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
-from src.drug_regimen.dependencies import regimen_service as _regimen_service
-from src.drug_regimen.schemas import (
+from api_backend.drug_regimen.dependencies import regimen_service as _regimen_service
+from api_backend.drug_regimen.schemas import (
     AddRegimenSchema,
     CreateRegimenSchema,
     GetOnlyRegimenSchema,
@@ -12,7 +12,7 @@ from src.drug_regimen.schemas import (
     RegimenQueryParams,
     UpdateRegimenSchema,
 )
-from src.drug_regimen.service import RegimenService
+from api_backend.drug_regimen.service import RegimenService
 
 regimen_router = APIRouter(
     prefix="/drug-regimen/regimen",

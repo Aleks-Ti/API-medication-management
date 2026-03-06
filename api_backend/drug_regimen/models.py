@@ -3,7 +3,7 @@ from datetime import datetime, time
 import sqlalchemy as sa
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.settings.base_model import Base
+from api_backend.settings.base_model import Base
 
 
 class Manager(Base):

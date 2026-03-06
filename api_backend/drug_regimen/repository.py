@@ -3,11 +3,11 @@ from typing import Sequence
 from sqlalchemy import and_, insert, select
 from sqlalchemy.orm import selectinload
 
-from src.drug_regimen.models import Manager, Regimen
-from src.drug_regimen.schemas import CreateComplexManagerSchema, ManagerQueryParams, RegimenQueryParams
-from src.settings.database import async_session_maker
-from src.settings.repository import SQLAlchemyRepository
-from src.user.models import User
+from api_backend.drug_regimen.models import Manager, Regimen
+from api_backend.drug_regimen.schemas import CreateComplexManagerSchema, ManagerQueryParams, RegimenQueryParams
+from api_backend.settings.database import async_session_maker
+from api_backend.settings.repository import SQLAlchemyRepository
+from api_backend.user.models import User
 
 
 class ManagerRepository(SQLAlchemyRepository):
