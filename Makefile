@@ -5,7 +5,7 @@ ifeq (revision,$(firstword $(MAKECMDGOALS)))
 	$(eval $(RUN_ARGS):;@:)
 endif
 
-.PHONY: start start-bot up down bot-up bot-down infra-up infra-down revision migrate
+.PHONY: start start-bot up down bot-up bot-down infra-up infra-down revision migrate ui-install ui-dev
 
 # --- Локальный запуск ---
 
@@ -62,6 +62,16 @@ revision:
 
 migrate:
 	uv run alembic upgrade head
+
+# --- Web UI ---
+
+# Установить зависимости web_ui
+ui-install:
+	cd web_ui && npm install
+
+# Запустить web_ui в dev-режиме (api должен быть запущен на localhost:8001)
+ui-dev:
+	cd web_ui && npm run dev
 
 # --- Lint ---
 

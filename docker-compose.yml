@@ -102,3 +102,16 @@ services:
     restart: always
     networks:
       - scheduler
+
+  web_ui:
+    build:
+      context: ./web_ui
+      dockerfile: Dockerfile
+    env_file: .env
+    depends_on:
+      - api
+    restart: always
+    ports:
+      - "${WEB_UI_PORT}:80"
+    networks:
+      - scheduler
