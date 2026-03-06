@@ -1,0 +1,1 @@
+from tg_bot.service_handlers.handlers import start_router

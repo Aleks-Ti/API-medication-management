@@ -2,6 +2,7 @@
 .vscode
 .env
 .envrc
+tg_bot/.env
 
 
 # Byte-compiled / optimized / DLL files

@@ -4,8 +4,8 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import Row
 from sqlalchemy.sql import text
 
-from api_backend.settings.database import async_session_maker
-from api_backend.settings.repository import SQLAlchemyRepository
+from src.settings.database import async_session_maker
+from src.settings.repository import SQLAlchemyRepository
 
 
 class EventRepository(SQLAlchemyRepository):

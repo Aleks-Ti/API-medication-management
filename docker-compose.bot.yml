@@ -10,8 +10,7 @@ networks:
 services:
   mq:
     image: rabbitmq:management
-    env_file:
-      - .env_api
+    env_file: .env
     environment:
       RABBITMQ_DEFAULT_USER: ${RMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RMQ_PASSWORD}
@@ -20,10 +19,11 @@ services:
       - "${RMQ_UI_PORT}:${RMQ_UI_INNER_PORT}"
     networks:
       - scheduler
+
   db:
     image: "postgres:16"
     restart: always
-    env_file: .env_api
+    env_file: .env
     environment:
       POSTGRES_PASSWORD: ${PG_PASSWORD}
       POSTGRES_DB: ${PG_DB_NAME}
@@ -32,15 +32,30 @@ services:
       POSTGRES_POOL: 10
     ports:
       - "${PG_PORT}:${PG_INNER_PORT}"
-      - "5333:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
     networks:
       - scheduler
+
+  redis:
+    image: "redis:6.2-alpine"
+    restart: always
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - scheduler
+
   event:
-    image: aleksti/event_med:latest
-    env_file:
-      - .env_api
+    build:
+      context: ./event_microservice
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      DEV: prod
+      PG_HOST: db
+      RMQ_HOST: mq
     depends_on:
       - mq
       - db
@@ -49,10 +64,17 @@ services:
       - "${EVENT_PORT}:${EVENT_PORT}"
     networks:
       - scheduler
+
   api:
-    image: aleksti/api_med:latest
-    env_file:
-      - .env_api
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      DEV: local_container
+      HOST: "0.0.0.0"
+      PG_HOST: db
+      RMQ_HOST: mq
     depends_on:
       - mq
       - db
@@ -62,24 +84,3 @@ services:
       - "${PORT}:${PORT}"
     networks:
       - scheduler
-
-  redis:
-    image: "redis:6.2-alpine"
-    restart: always
-    env_file: .env_api
-    volumes:
-      - redis_data:/data
-    networks:
-      - scheduler
-
-  bot:
-    image: aleksti/bot_med:latest
-    env_file: .env_api
-    networks:
-      - scheduler
-    depends_on:
-      - redis
-      - mq
-      - db
-      - event
-      - api

@@ -27,14 +27,6 @@ dev-dependencies = [
     "ruff>=0.7.3",
 ]
 
-[tool.uv.sources]
-src = { workspace = true }
-scripts = { workspace = true }
-
-# In defining a workspace, you must specify the members (required) and exclude (optional) keys, which direct the workspace to include or exclude specific directories as members respectively, and accept lists of globs:
-[tool.uv.workspace]
-members = ["webserver/*"]
-exclude = ["webserver/seeds"]
 
 [project.scripts]
 
@@ -84,7 +76,7 @@ exclude = [
 ]
 
 [tool.ruff.per-file-ignores]
-"src/settings.py" = ["E501"]
+"api_backend/settings/configuration.py" = ["E501"]
 
 [tool.ruff.pydocstyle]
 convention = "google"

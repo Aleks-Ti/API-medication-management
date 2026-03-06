@@ -1,4 +1,4 @@
-from api_backend.settings.schemas import PreBase
+from src.settings.schemas import PreBase
 
 
 class CheckLiveServiceSchema(PreBase):

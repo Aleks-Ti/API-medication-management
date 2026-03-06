@@ -9,7 +9,7 @@ RUN uv sync
 
 COPY alembic.ini .
 COPY ./migrations ./migrations
-COPY ./scripts ./scripts.
-COPY ./src ./src
+COPY ./scripts ./scripts
+COPY ./api_backend ./api_backend
 
-CMD ["uv", "run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8333"]
+CMD ["sh", "-c", "uv run uvicorn api_backend.main:app --host 0.0.0.0 --port ${PORT:-8001}"]

@@ -7,9 +7,9 @@ from aio_pika.abc import AbstractChannel, AbstractQueue, AbstractRobustConnectio
 from sqlalchemy import Row
 
 from src.event.repository import EventRepository
-from api_backend.settings.configuration import config_project
-from api_backend.settings.repository import AbstractRepository
-from api_backend.utils.time_conversion import conversion_GMT_reception_time_to_TZ
+from src.settings.configuration import config_project
+from src.settings.repository import AbstractRepository
+from src.utils.time_conversion import conversion_GMT_reception_time_to_TZ
 
 
 class EventService:

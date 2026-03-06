@@ -7,3 +7,7 @@ envrc
 pre-commit-config.yml
 .env_container
 __pycache__
+.git
+.github
+tests/
+image/
