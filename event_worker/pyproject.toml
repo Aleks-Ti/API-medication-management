@@ -1,7 +1,7 @@
 [project]
-name = "event_microservice"
+name = "event_worker"
 version = "0.1.0"
-description = "event_microservice"
+description = "event_worker"
 requires-python = ">=3.12"
 readme = "README.md"
 dependencies = [
@@ -24,13 +24,6 @@ dev-dependencies = [
     "pre-commit>=4.0.1",
     "ruff>=0.7.3",
 ]
-
-[tool.uv.sources]
-src = { workspace = true }
-
-[tool.uv.workspace]
-members = ["webserver/*"]
-exclude = ["webserver/seeds"]
 
 [project.scripts]
 

@@ -2,11 +2,10 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
+COPY tg_bot/pyproject.toml tg_bot/uv.lock ./
 RUN pip install uv
-
-COPY tg_bot/requirements.txt .
-RUN uv pip install --system -r requirements.txt
+RUN uv sync --no-dev
 
 COPY tg_bot/ ./tg_bot/
 
-CMD ["python", "-m", "tg_bot.main"]
+CMD ["uv", "run", "python", "-m", "tg_bot.main"]

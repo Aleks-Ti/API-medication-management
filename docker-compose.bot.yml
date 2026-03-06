@@ -49,7 +49,7 @@ services:
 
   event:
     build:
-      context: ./event_microservice
+      context: ./event_worker
       dockerfile: Dockerfile
     env_file: .env
     environment:
