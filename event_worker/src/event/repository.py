@@ -12,8 +12,8 @@ class EventRepository(SQLAlchemyRepository):
     async def scan_event(self) -> list[Row]:
         now_utc = datetime.now(UTC)
         interval = timedelta(minutes=1)
-        start_time = (now_utc - interval).time()
-        end_time = (now_utc + interval).time()
+        start_dt = now_utc - interval
+        end_dt = now_utc + interval
         async with async_session_maker() as session:
             stmt = text("""
                     SELECT
@@ -34,13 +34,17 @@ class EventRepository(SQLAlchemyRepository):
                         AND m.start_date <= :now
                         AND m.finish_date >= :now
                         AND r.is_active = true
-                        AND r.reception_time BETWEEN :start_time AND :end_time;
+                        AND (
+                            CASE WHEN :start_time <= :end_time
+                                THEN r.reception_time BETWEEN :start_time AND :end_time
+                                ELSE r.reception_time >= :start_time OR r.reception_time <= :end_time
+                            END
+                        );
                 """)
             params = {
                 "now": now_utc,
-                "regimen_active": True,
-                "start_time": start_time,
-                "end_time": end_time,
+                "start_time": start_dt.time(),
+                "end_time": end_dt.time(),
             }
 
             res = await session.execute(stmt, params)

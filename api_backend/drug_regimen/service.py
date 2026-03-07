@@ -31,7 +31,7 @@ class RegimenService:
         regimen_obj = await self.regimen_repository.find_one_ON_manager(regimen_id)
 
         dict_regimen_data = regimen_data.model_dump(exclude_none=True)
-        if regimen_data.reception_time:
+        if regimen_data.reception_time is not None:
             dict_regimen_data["reception_time"] = self.conversion_time(
                 regimen_data.reception_time,
                 regimen_obj.manager.timezone,
