@@ -14,6 +14,7 @@ class MainKeyboard:
     ADD_DRUG_REGIMEN: str = "Добавить курс/схему напоминаний"
     ME_DRUG_REGIMEN: str = "Мои курсы и напоминания"
     CANCEL: str = "Отмена действия"
+    OPEN_WEB_APP: str = "Открыть приложение 📱"
 
 
 class BaseMenuKeyboard:

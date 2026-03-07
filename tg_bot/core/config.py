@@ -53,6 +53,9 @@ class Settings:
         if os.getenv("DEV") == "prod"
         else "Зайди в .env и Добавь DEV переменную и что нибудь из этого [BASE_URL_API_LOCAL, BASE_URL_API_CONTAINER, BASE_URL_API_PROD]"  # noqa
     )
+    # HTTPS-ссылка на web UI. Telegram Mini Apps требуют HTTPS.
+    # В dev-режиме используй ngrok или оставь пустым (кнопка не появится).
+    WEB_UI_URL: str | None = os.getenv("WEB_UI_URL")
 
 
 @dataclass

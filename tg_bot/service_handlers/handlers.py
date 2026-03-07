@@ -6,6 +6,7 @@ from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
+from tg_bot.core.config import settings
 from tg_bot.user.dependencies import user_service as _user_service
 from tg_bot.utils.buttons import BaseMenuKeyboard as bmk
 from tg_bot.utils.buttons import MainKeyboard as mk
@@ -51,10 +52,17 @@ async def send_welcome(message: Message):
     button_1 = types.KeyboardButton(text=mk.ADD_DRUG_REGIMEN)
     button_2 = types.KeyboardButton(text=mk.ME_DRUG_REGIMEN)
     button_last = types.KeyboardButton(text=mk.CANCEL)
-    keyboard = types.ReplyKeyboardMarkup(
-        keyboard=[[button_1], [button_2], [button_last]],
-        resize_keyboard=True,
-    )
+
+    rows = [[button_1], [button_2], [button_last]]
+
+    if settings.WEB_UI_URL:
+        web_app_button = types.KeyboardButton(
+            text=mk.OPEN_WEB_APP,
+            web_app=types.WebAppInfo(url=settings.WEB_UI_URL),
+        )
+        rows.insert(2, [web_app_button])
+
+    keyboard = types.ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
 
     await message.answer(
         text="Привет {}!\n"

@@ -7,7 +7,7 @@ import { ManagerModal } from './ManagerModal'
 
 interface Props {
   userId: number
-  onLogout: () => void
+  onLogout?: () => void
 }
 
 export function Dashboard({ userId, onLogout }: Props) {
@@ -34,9 +34,11 @@ export function Dashboard({ userId, onLogout }: Props) {
         </div>
         <div className="header-right">
           <span className="user-id">ID: {userId}</span>
-          <button className="btn btn-ghost btn-sm" onClick={onLogout}>
-            Сменить
-          </button>
+          {onLogout && (
+            <button className="btn btn-ghost btn-sm" onClick={onLogout}>
+              Сменить
+            </button>
+          )}
         </div>
       </header>
 
