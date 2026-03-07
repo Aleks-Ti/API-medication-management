@@ -35,9 +35,9 @@ class EventRepository(SQLAlchemyRepository):
                         AND m.finish_date >= :now
                         AND r.is_active = true
                         AND (
-                            CASE WHEN :start_time <= :end_time
-                                THEN r.reception_time BETWEEN :start_time AND :end_time
-                                ELSE r.reception_time >= :start_time OR r.reception_time <= :end_time
+                            CASE WHEN CAST(:start_time AS time) <= CAST(:end_time AS time)
+                                THEN r.reception_time BETWEEN CAST(:start_time AS time) AND CAST(:end_time AS time)
+                                ELSE r.reception_time >= CAST(:start_time AS time) OR r.reception_time <= CAST(:end_time AS time)
                             END
                         );
                 """)
