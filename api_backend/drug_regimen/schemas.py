@@ -62,7 +62,6 @@ class CreateManagerSchema(PreBase):
 
 
 class UpdateManagerSchema(PreBase):
-    user_id: int = Field(None)
     name: str = Field(None)
     start_date: datetime = Field(None)
     finish_date: datetime = Field(None)

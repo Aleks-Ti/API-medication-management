@@ -74,7 +74,7 @@ async def update_manager(
     try:
         return await manager_service.manager_repository.update_one(
             manager_id,
-            drug_regimen_data.model_dump(),
+            drug_regimen_data.model_dump(exclude_none=True),
         )
     except Exception as err:
         logging.exception(f"Error update manager - {err}")
